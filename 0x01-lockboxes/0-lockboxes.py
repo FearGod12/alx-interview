@@ -10,11 +10,7 @@ def canUnlockAll(boxes):
     new_list = []
     for sublist in boxes:
         new_list.extend(sublist)
-
     for i in range(1, len(boxes)):
         if i in boxes[i] and new_list.count(i) < 2:
             return False
-
     return True
-
-
