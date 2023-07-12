@@ -3,6 +3,8 @@
 
 
 def minOperations(n):
+    if not isinstance(n, int) or n <= 1:
+        return 0
     factors = []
 
     # Divide by 2 repeatedly until it is no longer divisible by 2
