@@ -20,18 +20,20 @@ def print_statistics(total_file_size, status_codes):
 
 try:
     for line in sys.stdin:
-        data = line.rstrip()
+        data = line.strip()
         pattern = r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) ' \
                   r'- \[(.*?)\] "GET /projects/260 HTTP/1\.1" (\d{3}) (\d+)'
         match = re.match(pattern, data)
         if match:
             try:
-                ip, date, status, file_size = match.groups()
+                # ip, date, status, file_size = match.groups()
+                status = data.split(" ")[-2]
+                file_size = data.split(" ")[-1]
                 total_file_size += int(file_size)
+                count += 1
                 if status not in status_codes or not status.isdigit():
                     continue
                 status_codes[status] += 1
-                count += 1
                 if count == 10:
                     print_statistics(total_file_size, status_codes)
                     count = 0
@@ -39,3 +41,4 @@ try:
                 raise
 except KeyboardInterrupt:
     print_statistics(total_file_size, status_codes)
+    raise
