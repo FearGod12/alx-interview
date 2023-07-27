@@ -29,13 +29,13 @@ def validUTF8(data):
 
         index += 1
 
-        if (type(each) != int) or each > 255 or each < 0:
+        if (type(each) != int) or each < 0:
             # Check if each element is a valid 8-bit unsigned integer
             # (0 to 255).
             # If not, it is not a valid UTF-8 sequence.
             return False
 
-        binary_data = format(each, '08b')
+        binary_data = format(each, '08b')[-8:]
         # Get the binary representation of the current byte.
 
         if each < 128:
