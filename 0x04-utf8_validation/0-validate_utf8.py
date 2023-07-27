@@ -11,54 +11,54 @@ def validUTF8(data):
     :return: True if the input is a valid UTF-8 sequence, False otherwise.
     """
 
+    def is_continuation_byte(byte):
+        # Helper function to check if the byte is a continuation byte
+        # (starts with '10').
+        return 128 <= byte <= 191
+
     if len(data) == 0:
         # If the input list is empty, it is considered a valid UTF-8 sequence.
         return True
 
-    try:
-        assert type(data) == list
+    if not isinstance(data, list):
         # Ensure that the input data is a list.
-    except AssertionError:
-        # If the input is not a list, it is not a valid UTF-8 sequence.
         return False
 
-    index = 0
     count = 0
     for each in data:
         # Loop through each element in the input list.
 
-        index += 1
-
-        if (type(each) != int) or each < 0:
+        if not isinstance(each, int):
             # Check if each element is a valid 8-bit unsigned integer
             # (0 to 255).
             # If not, it is not a valid UTF-8 sequence.
             return False
 
-        binary_data = format(each, '08b')[-8:]
-        # Get the binary representation of the current byte.
+        # Consider only the last 8 bits of the integer.
+        each = each % 256
 
         if each < 128:
             # Single-byte UTF-8 character (0xxxxxxx).
             count = 0
-        elif binary_data.startswith('110'):
+        elif each >> 5 == 0b110:
             # Two-byte UTF-8 character (110xxxxx 10xxxxxx).
             count = 1
-        elif binary_data.startswith('1110'):
+        elif each >> 4 == 0b1110:
             # Three-byte UTF-8 character (1110xxxx 10xxxxxx 10xxxxxx).
             count = 2
-        elif binary_data.startswith('11110'):
+        elif each >> 3 == 0b11110:
             # Four-byte UTF-8 character (11110xxx 10xxxxxx 10xxxxxx 10xxxxxx).
             count = 3
+        else:
+            # Invalid UTF-8 encoding pattern.
+            return False
 
-        j = index
-        for _ in range(count):
+        for j in range(count):
             # Loop to check continuation bytes for multi-byte characters.
+            if len(data) > j + 1:
+                next_byte = data[j + 1]
 
-            if data[j + 1]:
-                # Check if there is a continuation byte available.
-                binary = format(data[j + 1], '08b')
-                if not binary.startswith('10'):
+                if not is_continuation_byte(next_byte):
                     # If the continuation byte doesn't start with '10',
                     # it is not a valid UTF-8 sequence.
                     return False
@@ -66,7 +66,5 @@ def validUTF8(data):
                 # If there is no continuation byte available,
                 # it is not a valid UTF-8 sequence.
                 return False
-
-        count = 0
 
     return True
