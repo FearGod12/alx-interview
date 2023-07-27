@@ -30,7 +30,8 @@ def validUTF8(data):
         index += 1
 
         if (type(each) is not int) or each > 255 or each < 0:
-            # Check if each element is a valid 8-bit unsigned integer (0 to 255).
+            # Check if each element is a valid 8-bit unsigned integer
+            # (0 to 255).
             # If not, it is not a valid UTF-8 sequence.
             return False
 
@@ -58,10 +59,12 @@ def validUTF8(data):
                 # Check if there is a continuation byte available.
                 binary = format(data[j + 1], '08b')
                 if not binary.startswith('10'):
-                    # If the continuation byte doesn't start with '10', it is not a valid UTF-8 sequence.
+                    # If the continuation byte doesn't start with '10',
+                    # it is not a valid UTF-8 sequence.
                     return False
             else:
-                # If there is no continuation byte available, it is not a valid UTF-8 sequence.
+                # If there is no continuation byte available,
+                # it is not a valid UTF-8 sequence.
                 return False
 
         count = 0
