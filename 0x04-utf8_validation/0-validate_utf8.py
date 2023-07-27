@@ -3,28 +3,67 @@
 
 
 def validUTF8(data):
-    """utf-8 validates a list of containing integers"""
+    """
+    UTF-8 validation function that checks if the input list of integers
+    represents a valid UTF-8 sequence.
+
+    :param data: A list of integers representing bytes in a UTF-8 sequence.
+    :return: True if the input is a valid UTF-8 sequence, False otherwise.
+    """
+
     if not data:
+        # If the input list is empty, it is considered a valid UTF-8 sequence.
         return True
+
     try:
-        assert type(data) == list
+        assert isinstance(data, list)
+        # Ensure that the input data is a list.
     except AssertionError:
+        # If the input is not a list, it is not a valid UTF-8 sequence.
         return False
+
+    index = 0
     count = 0
     for each in data:
-        if type(each) is not int:
+        # Loop through each element in the input list.
+
+        index += 1
+
+        if (type(each) is not int) or each > 255 or each < 0:
+            # Check if each element is a valid 8-bit unsigned integer (0 to 255).
+            # If not, it is not a valid UTF-8 sequence.
             return False
-        binary = bin(each)[-2:]
+
+        binary_data = format(each, '08b')
+        # Get the binary representation of the current byte.
+
         if each < 128:
-            binary = '0' + binary
-        if len(binary) > 8:
-            binary = binary[-8:]
-        if binary.startswith('0'):
-            continue
-        elif binary.startswith('10') and not binary[count + 1]:
-            return False
-        elif binary.startswith('110') and not binary[count + 2]:
-            return False
-        elif binary.startswith('1110') and not binary[count + 3]:
-            return False
+            # Single-byte UTF-8 character (0xxxxxxx).
+            count = 0
+        elif binary_data.startswith('110'):
+            # Two-byte UTF-8 character (110xxxxx 10xxxxxx).
+            count = 1
+        elif binary_data.startswith('1110'):
+            # Three-byte UTF-8 character (1110xxxx 10xxxxxx 10xxxxxx).
+            count = 2
+        elif binary_data.startswith('11110'):
+            # Four-byte UTF-8 character (11110xxx 10xxxxxx 10xxxxxx 10xxxxxx).
+            count = 3
+
+        j = index
+        for _ in range(count):
+            # Loop to check continuation bytes for multi-byte characters.
+
+            if data[j + 1]:
+                # Check if there is a continuation byte available.
+                binary = format(data[j + 1], '08b')
+                if not binary.startswith('10'):
+                    # If the continuation byte doesn't start with '10', it is not a valid UTF-8 sequence.
+                    return False
+            else:
+                # If there is no continuation byte available, it is not a valid UTF-8 sequence.
+                return False
+
+        count = 0
+
     return True
