@@ -11,12 +11,12 @@ def validUTF8(data):
     :return: True if the input is a valid UTF-8 sequence, False otherwise.
     """
 
-    if not data:
+    if len(data) == 0:
         # If the input list is empty, it is considered a valid UTF-8 sequence.
         return True
 
     try:
-        assert isinstance(data, list)
+        assert type(data) == list
         # Ensure that the input data is a list.
     except AssertionError:
         # If the input is not a list, it is not a valid UTF-8 sequence.
@@ -29,7 +29,7 @@ def validUTF8(data):
 
         index += 1
 
-        if (type(each) is not int) or each > 255 or each < 0:
+        if (type(each) != int) or each > 255 or each < 0:
             # Check if each element is a valid 8-bit unsigned integer
             # (0 to 255).
             # If not, it is not a valid UTF-8 sequence.
