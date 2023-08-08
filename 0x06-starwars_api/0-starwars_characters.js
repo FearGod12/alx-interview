@@ -1,15 +1,27 @@
 #!/usr/bin/node
 
-import request from "request";
+const request = require('request');
+const util = require('util');
 
-let result = [];
-let arg = process.argv[2];
+const promisified = util.promisify(request);
+const names = [];
+const arg = process.argv[2];
 
-request("https://swapi-api.alx-tools.com/api/films/" + arg, (error, response, body) => {
-    if (error) {
-        console.log(error);
-    }
+const url = 'https://swapi-api.alx-tools.com/api/films/' + arg;
 
-    console.log(response.statusCode);
-    console.log(body);
-});
+async function main () {
+  let response = await promisified(url);
+  let body = JSON.parse(response.body);
+
+  for (const nam of body.characters) {
+    response = await promisified(nam);
+    body = JSON.parse(response.body);
+    names.push(body.name);
+  }
+
+  for (const each of names) {
+    console.log(each);
+  }
+}
+
+main();
