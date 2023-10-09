@@ -1,47 +1,44 @@
 #!/usr/bin/python3
-"""Solves the N queens puzzle challenge"""
+""" N queens """
 import sys
 
-if len(sys.argv) != 2:
+
+if len(sys.argv) > 2 or len(sys.argv) < 2:
     print("Usage: nqueens N")
-    sys.exit(1)
+    exit(1)
 
-try:
-    N = int(sys.argv[1])
-    if N < 4:
-        print("N must be at least 4")
-        sys.exit(1)
-except ValueError:
+if not sys.argv[1].isdigit():
     print("N must be a number")
-    sys.exit(1)
+    exit(1)
+
+if int(sys.argv[1]) < 4:
+    print("N must be at least 4")
+    exit(1)
+
+n = int(sys.argv[1])
 
 
-def resolve_matrix_for(queen, matrix, positions):
-    """
-    Resolves/removes reachable range of queen from the matrix then
-    recursively resolves for subsequent possible queen positions
-    for the next row.
-    """
-    positions.append(queen)
-
-    for cell in matrix[:]:
-        if any([cell == queen, cell[0] == queen[0], cell[1] == queen[1],
-                cell[0] - cell[1] == queen[0] - queen[1],
-                cell[0] + cell[1] == queen[0] + queen[1]]):
-            matrix.pop(matrix.index(cell))
-
-    # if end of the recursion
-    if len(matrix) == 0:
-        if len(positions) == N:
-            print(positions)
-        return
-
-    # else recursively check for possible queen positions
-    for possible_queen_pos in [cell for cell in matrix
-                               if cell[0] == matrix[0][0]]:
-        resolve_matrix_for(possible_queen_pos, matrix[:], positions[:])
+def queens(n, i=0, a=[], b=[], c=[]):
+    """ find possible positions """
+    if i < n:
+        for j in range(n):
+            if j not in a and i + j not in b and i - j not in c:
+                yield from queens(n, i + 1, a + [j], b + [i + j], c + [i - j])
+    else:
+        yield a
 
 
-for i in range(N):
-    resolve_matrix_for([0, i], [[x, y] for x in range(N)
-                       for y in range(N)], [])
+def solve(n):
+    """ solve """
+    k = []
+    i = 0
+    for solution in queens(n, 0):
+        for s in solution:
+            k.append([i, s])
+            i += 1
+        print(k)
+        k = []
+        i = 0
+
+
+solve(n)
